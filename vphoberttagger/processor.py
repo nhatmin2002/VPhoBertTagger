@@ -8,6 +8,27 @@ import pandas as pd
 import numpy as np
 
 
+def clean_nan(df):
+    # Tạo một danh sách trống để lưu các chỉ số cần xóa
+    indices_to_drop = []
+
+    # Duyệt qua từng hàng trong DataFrame
+    for i in range(len(df) - 1):
+        # Kiểm tra nếu hai hàng NaN liên tiếp
+        if df.loc[i, 'token'] is np.nan and df.loc[i+1, 'token'] is np.nan:
+            # Thêm chỉ số hàng cần xóa vào danh sách
+            indices_to_drop.append(i)
+
+    # Kiểm tra xem hàng cuối cùng có phải là NaN không
+    if df.iloc[-1]['token'] is np.nan:
+        indices_to_drop.append(len(df) - 1)
+
+    # Xóa các hàng được chỉ định và trả về DataFrame đã được xử lý
+    cleaned_df = df.drop(indices_to_drop)
+    # Reset lại index
+    cleaned_df.reset_index(drop=True, inplace=True)
+    
+    return cleaned_df
 class NerFeatures(object):
     def __init__(self, input_ids, token_type_ids, attention_mask, valid_ids, labels, label_masks):
         self.input_ids = torch.as_tensor(input_ids, dtype=torch.long)
@@ -109,11 +130,12 @@ def convert_word_segment_examples_features(data_path: Union[str, os.PathLike],
     features = []
     tokens = []
     tag_ids = []
-    data = pd.read_csv(data_path,
+    df = pd.read_csv(data_path,
                        delimiter='\t',
                        encoding='utf-8',
                        skip_blank_lines=False,
                        names=header_names)
+    data=clean_nan(df)
     data.fillna(method="ffill")
     for row_idx, row in tqdm(data.iterrows(), total=len(data), desc=f"Load dataset {data_path}..."):
         if row.notna().token:
