@@ -72,19 +72,19 @@ def validate(model, task, iterator, cur_epoch: int, output_dir: Union[str, os.Pa
         #                                       digits=4,
         #                                       target_names=LABEL_MAPPING[task]["label2id"])
         LOGGER.info(reports)
-        label_index_to_print = list(range(len(LABEL_MAPPING[task]["label2id"])))
-        plot_confusion_matrix(eval_golds, eval_preds,
-                              classes=LABEL_MAPPING[task]["label2id"],
-                              labels=label_index_to_print,
-                              output_dir=output_dir,
-                              title=f'Normalized confusion matrix of {task.upper()}',
-                              normalize=True)
+        # label_index_to_print = list(range(len(LABEL_MAPPING[task]["label2id"])))
+        # plot_confusion_matrix(eval_golds, eval_preds,
+        #                       classes=LABEL_MAPPING[task]["label2id"],
+        #                       labels=label_index_to_print,
+        #                       output_dir=output_dir,
+        #                       title=f'Normalized confusion matrix of {task.upper()}',
+        #                       normalize=True)
     else:
-        reports: dict = classication_report2(eval_golds, eval_preds)
+        # reports: dict = classication_report2(eval_golds, eval_preds)
 
-        # reports: dict = classification_report(eval_golds, eval_preds,
-        #                                       output_dict=True,
-        #                                       zero_division=0)
+        reports: dict = classification_report(eval_golds, eval_preds,
+                                              output_dict=True,
+                                              zero_division=0)
         epoch_avg_f1 = reports['macro avg']['f1-score']
         epoch_avg_acc = reports['accuracy']
         LOGGER.info(f"\t{'*' * 20}Validate Summary{'*' * 20}")
