@@ -32,7 +32,7 @@ def save_model(args, saved_file, model):
     torch.save(saved_data, saved_file)
 def classication_report2(true_labels, preds):
     # id2label được định nghĩa trực tiếp
-    labelss=LABEL_MAPPING[task]["label2id"]
+    labelss=LABEL_MAPPING['vlsp2016']["label2id"]
     label2id = {label: i for i, label in enumerate(labelss)}
     labels = list(set(true_labels))
     labels.sort(key=lambda x: true_labels.index(x))
