@@ -30,13 +30,13 @@ def save_model(args, saved_file, model):
         'args': args
     }
     torch.save(saved_data, saved_file)
-def classication_report(true_labels, preds):
-    # id2label được định nghĩa trực tiếp
-    id2label = {0: 'cat', 1: 'dog', 2: 'bird', 3: 'fish'}
-    labels = list(set(true_labels))
-    labels.sort(key=lambda x: true_labels.index(x))
-    target_names = [id2label[i] for i in labels]
-    print(classification_report(true_labels, preds, labels=labels, target_names=target_names))
+# def classication_report(true_labels, preds):
+#     # id2label được định nghĩa trực tiếp
+#     id2label = {0: 'cat', 1: 'dog', 2: 'bird', 3: 'fish'}
+#     labels = list(set(true_labels))
+#     labels.sort(key=lambda x: true_labels.index(x))
+#     target_names = [id2label[i] for i in labels]
+#     print(classification_report(true_labels, preds, labels=labels, target_names=target_names))
 
 def validate(model, task, iterator, cur_epoch: int, output_dir: Union[str, os.PathLike] = './', is_test=False):
     start_time = time.time()
