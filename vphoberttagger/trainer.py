@@ -61,6 +61,7 @@ def validate(model, task, iterator, cur_epoch: int, output_dir: Union[str, os.Pa
     if is_test:
         evaluate([LABEL_MAPPING[task]["id2label"][tag] for tag in eval_golds],
                  [LABEL_MAPPING[task]["id2label"][tag] for tag in eval_preds])
+        print(LABEL_MAPPING[task]["label2id"])
         reports: dict = classification_report(eval_golds, eval_preds,
                                               output_dict=False,
                                               zero_division=0,
