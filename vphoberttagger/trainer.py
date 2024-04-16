@@ -30,13 +30,14 @@ def save_model(args, saved_file, model):
         'args': args
     }
     torch.save(saved_data, saved_file)
-# def classication_report(true_labels, preds):
-#     # id2label được định nghĩa trực tiếp
-#     id2label = {0: 'cat', 1: 'dog', 2: 'bird', 3: 'fish'}
-#     labels = list(set(true_labels))
-#     labels.sort(key=lambda x: true_labels.index(x))
-#     target_names = [id2label[i] for i in labels]
-#     print(classification_report(true_labels, preds, labels=labels, target_names=target_names))
+def classication_report2(true_labels, preds):
+    # id2label được định nghĩa trực tiếp
+    labelss=LABEL_MAPPING[task]["label2id"]
+    label2id = {label: i for i, label in enumerate(labelss)}
+    labels = list(set(true_labels))
+    labels.sort(key=lambda x: true_labels.index(x))
+    target_names = [id2label[i] for i in labels]
+    print(classification_report(true_labels, preds, labels=labels, target_names=target_names))
 
 def validate(model, task, iterator, cur_epoch: int, output_dir: Union[str, os.PathLike] = './', is_test=False):
     start_time = time.time()
@@ -62,11 +63,13 @@ def validate(model, task, iterator, cur_epoch: int, output_dir: Union[str, os.Pa
         evaluate([LABEL_MAPPING[task]["id2label"][tag] for tag in eval_golds],
                  [LABEL_MAPPING[task]["id2label"][tag] for tag in eval_preds])
         print(LABEL_MAPPING[task]["label2id"])
-        reports: dict = classification_report(eval_golds, eval_preds,
-                                              output_dict=False,
-                                              zero_division=0,
-                                              digits=4,
-                                              target_names=LABEL_MAPPING[task]["label2id"])
+        reports: dict = classication_report2(eval_golds, eval_preds)
+
+        # reports: dict = classication_report2(eval_golds, eval_preds,
+        #                                       output_dict=False,
+        #                                       zero_division=0,
+        #                                       digits=4,
+        #                                       target_names=LABEL_MAPPING[task]["label2id"])
         LOGGER.info(reports)
         label_index_to_print = list(range(len(LABEL_MAPPING[task]["label2id"])))
         plot_confusion_matrix(eval_golds, eval_preds,
@@ -76,9 +79,11 @@ def validate(model, task, iterator, cur_epoch: int, output_dir: Union[str, os.Pa
                               title=f'Normalized confusion matrix of {task.upper()}',
                               normalize=True)
     else:
-        reports: dict = classification_report(eval_golds, eval_preds,
-                                              output_dict=True,
-                                              zero_division=0)
+        reports: dict = classication_report2(eval_golds, eval_preds)
+
+        # reports: dict = classification_report(eval_golds, eval_preds,
+        #                                       output_dict=True,
+        #                                       zero_division=0)
         epoch_avg_f1 = reports['macro avg']['f1-score']
         epoch_avg_acc = reports['accuracy']
         LOGGER.info(f"\t{'*' * 20}Validate Summary{'*' * 20}")
