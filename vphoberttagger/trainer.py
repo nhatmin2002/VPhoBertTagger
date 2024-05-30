@@ -39,7 +39,13 @@ def classication_report2(true_labels, preds):
     labels.sort(key=lambda x: true_labels.index(x))
     target_names = [id2label[i] for i in labels]
     print(classification_report(true_labels, preds, labels=labels, target_names=target_names))
-
+    
+def save_eval_preds_to_txt(eval_preds, output_dir):
+    os.makedirs(output_dir, exist_ok=True)
+    with open(os.path.join(output_dir, "eval_preds.txt"), "w") as file:
+        for pred in eval_preds:
+            file.write(pred + "\n")
+            
 def validate(model, task, iterator, cur_epoch: int, output_dir: Union[str, os.PathLike] = './', is_test=False):
     start_time = time.time()
     model.eval()
@@ -61,6 +67,8 @@ def validate(model, task, iterator, cur_epoch: int, output_dir: Union[str, os.Pa
                 eval_preds.extend(outputs.tags)
     epoch_loss = eval_loss / len(iterator)
     if is_test:
+        print(eval_preds)
+        # print([LABEL_MAPPING[task]["id2label"][tag] for tag in eval_preds)
         evaluate([LABEL_MAPPING[task]["id2label"][tag] for tag in eval_golds],
                  [LABEL_MAPPING[task]["id2label"][tag] for tag in eval_preds])
         print(LABEL_MAPPING[task]["label2id"])
